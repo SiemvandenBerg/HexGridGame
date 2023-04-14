@@ -4,6 +4,7 @@ from hexagongraph import HexagonGraph
 from calculate import point_in_hexagon, update_game_screen_position, game_screen_offset_x, game_screen_offset_y, dx, dy
 from pathfinding import astar_hex
 from drawing import draw_grid
+from draw_terrain import draw_terrain
 from utils import colors, screen, rows, cols, hex_size
 pygame.font.init()
 font = pygame.font.SysFont("Arial", 16)
@@ -14,10 +15,6 @@ start = None
 end = None
 screenPos = (0, 0)
 initial_screen_pos = (0, 0) 
-
-
-# with open('image.txt', 'r', encoding='utf-8') as f:
-#     imageArrayFromFile = ast.literal_eval(f.read().strip())
 
 def display_offset_info():
     global game_screen_offset_x, game_screen_offset_y
@@ -39,6 +36,7 @@ prev_mouse_pos = None
 
 screen.fill(black)
 draw_grid(initial_screen_pos)
+# draw_terrain(grid, initial_screen_pos)
 
 while running:
     for event in pygame.event.get():
