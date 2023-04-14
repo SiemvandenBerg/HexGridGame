@@ -36,7 +36,7 @@ prev_mouse_pos = None
 
 screen.fill(black)
 draw_grid(initial_screen_pos)
-# draw_terrain(grid, initial_screen_pos)
+draw_terrain(grid)
 
 while running:
     for event in pygame.event.get():
@@ -92,7 +92,7 @@ while running:
                                 draw_grid(initial_screen_pos)
 
     # Draw the grid once per frame
-    draw_grid(screenPos)
+    # draw_grid(screenPos)
 
     pygame.display.flip()
 pygame.quit()

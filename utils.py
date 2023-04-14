@@ -5,9 +5,9 @@ import pygame
 screen_width = 800
 screen_height = 600
 
-rows = 20
-cols = 20
-hex_size = 40
+rows = 4
+cols = 4
+hex_size = 100
 
 dx = 0
 dy = 0

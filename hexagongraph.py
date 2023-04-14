@@ -1,14 +1,24 @@
 # hexagon_graph.py
 from terrain_types import terrain_types
 from drawing import draw_grid
+import numpy as np
 
 # Define the hexgraph class
 class HexagonGraph:
     def __init__(self, rows, columns, terrains, colors):
         self.rows = rows
         self.columns = columns
-        self.terrains = terrains
+        self.terrains = np.array(terrains)  # Convert to NumPy array
         self.colors = colors
+
+
+    def get_hexagon(self, row, col):
+        """Returns the hexagon at the given row and column"""
+        return row, col
+    
+    def get_terrain(self, row, col):
+        """Returns the terrain of the hexagon at the given row and column"""
+        return self.terrains[row][col]
 
     # Initialize the colors of the grid to the terrain colors of the grid 
     def init_colors(self):
@@ -89,4 +99,4 @@ class HexagonGraph:
     def draw_path(self, path):
         for hexagon in path:
             row, col = hexagon
-            self.colors[row, col] = (255, 0, 0)
+            self.colors[row][col] = (255, 0, 0)

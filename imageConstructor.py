@@ -4,22 +4,68 @@ from PIL import Image
 import pygame
 import ast
 from utils import screen
-
-# with open('image.txt', 'r', encoding='utf-8') as f:
-#     data = f.read()
-#     data = data.strip()
-#     imageArrayFromFile = ast.literal_eval(data)
+import os
+import ast
 
 # Function that opens a txt file from terrain_arrays folder based on terrain type and returns imageArrayFromFile
 
 def OpenImageFile(terrain_type):
+    cache_dir = 'terrain_cache'
 
-    with open(f'{terrain_type}.txt', 'r', encoding='utf-8') as f:
-        data = f.read()
-        data = data.strip()
+    # clear the cache directory
+    # if os.path.exists(cache_dir):
+    #     for file in os.listdir(cache_dir):
+    #         os.remove(os.path.join(cache_dir, file))
+    #         print("cache cleared")
+
+    if not os.path.exists(cache_dir):
+        os.makedirs(cache_dir)
+    cache_file = os.path.join(cache_dir, f'{terrain_type}.txt')
+
+    # check if the file exists in the cache
+    if os.path.exists(cache_file):
+        # read the file from the cache
+        print("cached data exists for:" + terrain_type)
+        with open(cache_file, 'r', encoding='utf-8') as f:
+            data = f.read()
+            # print progress of read file from cache as a percentage of file size in the terminal
+            print(f'Opening {terrain_type}.txt: {round((f.tell() / os.path.getsize(f.name)) * 100, 2)}%')
         imageArrayFromFile = ast.literal_eval(data)
-    print("open image file for:" + imageArrayFromFile)
+    else:
+        # create the file and store it in the cache
+        print("cached data does NOT exist for:" + terrain_type)
+        print("creating cached data for:" + terrain_type)
+        # replace spaces with underscores in terrain
+        terrain_type = terrain_type.replace(' ', '_')
+
+        if terrain_type + '.txt' in os.listdir('terrain_arrays'):    
+            with open(f'terrain_arrays/{terrain_type}.txt', 'r', encoding='utf-8') as f:
+                data = f.read()
+                data = data.strip()
+                imageArrayFromFile = ast.literal_eval(data)
+            with open(cache_file, 'w', encoding='utf-8') as f:
+                f.write(str(imageArrayFromFile))
+        else:
+            print("no file for:" + terrain_type)
+            return None
     return imageArrayFromFile
+
+# def OpenImageFile(terrain_type):
+#     # if terrain_type exists as a text file in terrain_arrays folder
+#     if terrain_type + '.txt' in os.listdir('terrain_arrays'):    
+#         # open terrain_type.txt file in terrain_arrays folder
+#         print("file exists for:" + terrain_type)
+#         with open(f'terrain_arrays/{terrain_type}.txt', 'r', encoding='utf-8') as f:
+#             data = f.read()
+#             data = data.strip()
+#             print(f'Opening {terrain_type}.txt: {round((f.tell() / os.path.getsize(f.name)) * 100, 2)}%')
+#             imageArrayFromFile = ast.literal_eval(data)
+#             print("return for:" + str(imageArrayFromFile))
+#         return imageArrayFromFile
+
+#     else:
+#         print("no file for:" + terrain_type)
+#         return None
 
 def DrawImageFromSquares(imageArray):
     height, width = len(imageArray), len(imageArray[0])
@@ -30,7 +76,7 @@ def DrawImageFromSquares(imageArray):
     return surface
 
 def MoveImage(image, x, y):
-    screen.fill((0, 0, 0))
+    # screen.fill((0, 0, 0))
     screen.blit(image, (x, y))
     pygame.display.update()
 

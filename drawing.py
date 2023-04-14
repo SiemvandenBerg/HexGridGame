@@ -3,6 +3,7 @@ import numpy as np
 import pygame
 from utils import colors, screen, rows, cols, hex_size, initial_screen_pos
 from calculate import game_screen_offset_x, game_screen_offset_y
+from draw_terrain import draw_terrain
 pygame.font.init()
 font = pygame.font.SysFont("Arial", 16)
 
@@ -59,3 +60,4 @@ def draw_grid(screenPos):
             center_x -= game_screen_offset_x
             center_y -= game_screen_offset_y
             draw_hexagon(center_x=center_x, center_y=center_y, size=size, row=row, col=col, colors=colors, in_path=False)
+    
