@@ -1,7 +1,7 @@
 # drawing.py
 import numpy as np
 import pygame
-from utils import colors, screen, rows, cols, hex_size, initial_screen_pos
+from utils import colors, screen, rows, cols, hex_size, layer1, layer1_rect, layer2, layer2_rect
 from calculate import game_screen_offset_x, game_screen_offset_y
 from draw_terrain import draw_terrain
 pygame.font.init()
@@ -9,7 +9,7 @@ font = pygame.font.SysFont("Arial", 16)
 
 screenPos = (0, 0)
 
-def draw_hexagon(center_x, center_y, size, row, col, colors, in_path):
+def draw_hexagon(center_x, center_y, size, row, col, colors, in_path, layer):
     global game_screen_offset_x, game_screen_offset_y
     angle = np.pi/6  
     points = []
@@ -27,16 +27,17 @@ def draw_hexagon(center_x, center_y, size, row, col, colors, in_path):
     else:
         color = colors[row, col]
 
-    pygame.draw.polygon(screen, color, points)
+    pygame.draw.polygon(layer, color, points)
 
     border_color = (0, 85, 128) 
     border_width = 3 
     for i in range(len(points)-1):
-        pygame.draw.line(screen, border_color, points[i], points[i+1], border_width)
+        pygame.draw.line(layer, border_color, points[i], points[i+1], border_width)
     
     text = font.render(f"({row}, {col})", True, (0, 0, 0))
     text_rect = text.get_rect(center=(center_x, center_y))
-    screen.blit(text, text_rect)
+    
+    layer.blit(text, text_rect)
 
 def draw_grid(screenPos):
     global game_screen_offset_x, game_screen_offset_y
@@ -47,7 +48,9 @@ def draw_grid(screenPos):
     size = hex_size
     h_dist = size * np.sqrt(3)
     v_dist = size * 3/2
-    screen.fill((0, 0, 0))
+
+    # clear layer2 before drawing
+    layer2.fill((0, 0, 0, 0))
 
     for row in range(rows):
         for col in range(cols):
@@ -59,5 +62,4 @@ def draw_grid(screenPos):
                 center_y = row * v_dist + size*2.5
             center_x -= game_screen_offset_x
             center_y -= game_screen_offset_y
-            draw_hexagon(center_x=center_x, center_y=center_y, size=size, row=row, col=col, colors=colors, in_path=False)
-    
+            draw_hexagon(center_x=center_x, center_y=center_y, size=size, row=row, col=col, colors=colors, in_path=False, layer=layer2)

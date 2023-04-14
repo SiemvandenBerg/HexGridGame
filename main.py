@@ -5,7 +5,7 @@ from calculate import point_in_hexagon, update_game_screen_position, game_screen
 from pathfinding import astar_hex
 from drawing import draw_grid
 from draw_terrain import draw_terrain
-from utils import colors, screen, rows, cols, hex_size
+from utils import colors, screen, rows, cols, hex_size, layer1, layer2, layer1_rect, layer2_rect  
 pygame.font.init()
 font = pygame.font.SysFont("Arial", 16)
 pygame.init()
@@ -16,27 +16,17 @@ end = None
 screenPos = (0, 0)
 initial_screen_pos = (0, 0) 
 
-def display_offset_info():
-    global game_screen_offset_x, game_screen_offset_y
-    info_box_color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-    info_box_rect = pygame.Rect(20, 20, 200, 50)
-    pygame.draw.rect(screen, info_box_color, info_box_rect)
-    offset_info_str = f"Info Offset: ({game_screen_offset_x}, {game_screen_offset_y})"
-    offset_info_text = font.render(offset_info_str, None, (0, 0, 0))
-    offset_info_rect = offset_info_text.get_rect(center=info_box_rect.center)
-    screen.blit(offset_info_text, offset_info_rect)
-
 grid = HexagonGraph(rows, cols, terrains, colors)
 grid.init_colors()
-    
+
 running=True
 selected_hexagon = None
 right_mouse_down = False
 prev_mouse_pos = None
 
-screen.fill(black)
-draw_grid(initial_screen_pos)
-draw_terrain(grid)
+# layer1.fill((255, 0, 0))  # Fill layer 1 with red color
+# pygame.draw.circle(layer2, (0, 0, 255), (100, 100), 50)  # Draw a blue circle on layer 2
+
 
 while running:
     for event in pygame.event.get():
@@ -51,6 +41,8 @@ while running:
                 delta_y = event.pos[1] - prev_mouse_pos[1]
                 screenPos = update_game_screen_position(delta_x, delta_y, screenPos)
                 draw_grid(screenPos)
+                draw_terrain(grid)
+                pygame.display.update()
                 prev_mouse_pos = event.pos
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 3:
@@ -79,7 +71,6 @@ while running:
                             center_x = col * h_dist + (size*3)/2 + h_dist/2
                             center_y = row * v_dist + size*2.5
                         if point_in_hexagon(mouse_x, mouse_y, center_x, center_y, size, game_screen_offset_x, game_screen_offset_y):
-
                             if start is None:
                                 start = (row, col)
                                 print('start: {}'.format(start))
@@ -87,13 +78,24 @@ while running:
                                 end = (row, col)
                                 print('end: {}'.format(end))
                                 path = astar_hex(grid, start, end)
+                                draw_grid(screenPos)
+                                draw_terrain(grid)
+                                pygame.display.update()
                                 start = None
                                 end = None
-                                draw_grid(initial_screen_pos)
+    
+    # Draw grid with initial screen position one time to  initialize layer1
+    if initial_screen_pos == (0, 0):
+        draw_grid(initial_screen_pos)
+        draw_terrain(grid)
 
-    # Draw the grid once per frame
-    # draw_grid(screenPos)
+        initial_screen_pos = (1, 1)    
 
     pygame.display.flip()
+
+    # draw layer 2 on top of layer 1
+    screen.blit(layer1, layer1_rect)
+    screen.blit(layer2, layer2_rect)
+    
 pygame.quit()
 sys.exit()

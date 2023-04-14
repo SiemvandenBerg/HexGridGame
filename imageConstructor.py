@@ -50,23 +50,6 @@ def OpenImageFile(terrain_type):
             return None
     return imageArrayFromFile
 
-# def OpenImageFile(terrain_type):
-#     # if terrain_type exists as a text file in terrain_arrays folder
-#     if terrain_type + '.txt' in os.listdir('terrain_arrays'):    
-#         # open terrain_type.txt file in terrain_arrays folder
-#         print("file exists for:" + terrain_type)
-#         with open(f'terrain_arrays/{terrain_type}.txt', 'r', encoding='utf-8') as f:
-#             data = f.read()
-#             data = data.strip()
-#             print(f'Opening {terrain_type}.txt: {round((f.tell() / os.path.getsize(f.name)) * 100, 2)}%')
-#             imageArrayFromFile = ast.literal_eval(data)
-#             print("return for:" + str(imageArrayFromFile))
-#         return imageArrayFromFile
-
-#     else:
-#         print("no file for:" + terrain_type)
-#         return None
-
 def DrawImageFromSquares(imageArray):
     height, width = len(imageArray), len(imageArray[0])
     surface = pygame.Surface((width, height))
@@ -92,7 +75,3 @@ def ShuffleRectangles(surface):
         new_color = surface.get_at(rect_list.pop())
         new_surface.set_at(rect, new_color)
     return new_surface
-
-# pixelArtSurface = DrawImageFromSquares(imageArrayFromFile)
-# screen.blit(pixelArtSurface, (0, 0))
-# # pygame.display.update()

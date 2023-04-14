@@ -1,6 +1,5 @@
 # hexagon_graph.py
 from terrain_types import terrain_types
-from drawing import draw_grid
 import numpy as np
 
 # Define the hexgraph class
