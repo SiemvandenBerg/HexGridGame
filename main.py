@@ -4,13 +4,13 @@ from hexagongraph import HexagonGraph
 from calculate import point_in_hexagon, update_game_screen_position, game_screen_offset_x, game_screen_offset_y, dx, dy
 from pathfinding import astar_hex
 from drawing import draw_grid
-from draw_terrain import draw_terrain
+# from draw_terrain import draw_terrain
 from utils import colors, screen, rows, cols, hex_size, layer1, layer2, layer1_rect, layer2_rect  
 pygame.font.init()
 font = pygame.font.SysFont("Arial", 16)
 pygame.init()
 white, black, red = (255, 255, 255), (0, 0, 0), (255, 0, 0)
-terrains = np.random.choice(['grassland', 'swamp', 'forest', 'dark forest', 'hills', 'mountains', 'water'], (rows, cols), p=[0.7, 0.01, 0.13, 0.13, 0.01, 0.01, 0.01])
+terrains = np.random.choice(['grassland', 'swamp', 'forest', 'dark forest', 'hills', 'mountains', 'water'], (rows, cols), p=[0.45, 0.02, 0.45, 0.02, 0.02, 0.02, 0.02])
 start = None
 end = None
 screenPos = (0, 0)
@@ -24,9 +24,7 @@ selected_hexagon = None
 right_mouse_down = False
 prev_mouse_pos = None
 
-# layer1.fill((255, 0, 0))  # Fill layer 1 with red color
-# pygame.draw.circle(layer2, (0, 0, 255), (100, 100), 50)  # Draw a blue circle on layer 2
-
+layer1.fill((200, 200, 200))  # Fill layer 1 with grey color
 
 while running:
     for event in pygame.event.get():
@@ -40,8 +38,8 @@ while running:
                 delta_x = event.pos[0] - prev_mouse_pos[0]
                 delta_y = event.pos[1] - prev_mouse_pos[1]
                 screenPos = update_game_screen_position(delta_x, delta_y, screenPos)
-                draw_grid(screenPos)
-                draw_terrain(grid)
+                draw_grid(screenPos, grid)
+                # draw_terrain(grid)
                 pygame.display.update()
                 prev_mouse_pos = event.pos
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -78,16 +76,15 @@ while running:
                                 end = (row, col)
                                 print('end: {}'.format(end))
                                 path = astar_hex(grid, start, end)
-                                draw_grid(screenPos)
-                                draw_terrain(grid)
+                                draw_grid(screenPos, grid)
                                 pygame.display.update()
                                 start = None
                                 end = None
     
     # Draw grid with initial screen position one time to  initialize layer1
     if initial_screen_pos == (0, 0):
-        draw_grid(initial_screen_pos)
-        draw_terrain(grid)
+        draw_grid(initial_screen_pos, grid)
+        # draw_terrain(grid)
 
         initial_screen_pos = (1, 1)    
 

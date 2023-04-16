@@ -99,3 +99,4 @@ class HexagonGraph:
         for hexagon in path:
             row, col = hexagon
             self.colors[row][col] = (255, 0, 0)
+    

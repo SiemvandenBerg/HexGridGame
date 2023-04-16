@@ -25,16 +25,14 @@ def OpenImageFile(terrain_type):
     # check if the file exists in the cache
     if os.path.exists(cache_file):
         # read the file from the cache
-        print("cached data exists for:" + terrain_type)
+        # print("cached data exists for: " + terrain_type)
         with open(cache_file, 'r', encoding='utf-8') as f:
             data = f.read()
-            # print progress of read file from cache as a percentage of file size in the terminal
-            print(f'Opening {terrain_type}.txt: {round((f.tell() / os.path.getsize(f.name)) * 100, 2)}%')
         imageArrayFromFile = ast.literal_eval(data)
     else:
         # create the file and store it in the cache
-        print("cached data does NOT exist for:" + terrain_type)
-        print("creating cached data for:" + terrain_type)
+        # print("cached data does NOT exist for:" + str(terrain_type))
+        # print("creating cached data for:" + str(terrain_type))
         # replace spaces with underscores in terrain
         terrain_type = terrain_type.replace(' ', '_')
 
@@ -46,13 +44,15 @@ def OpenImageFile(terrain_type):
             with open(cache_file, 'w', encoding='utf-8') as f:
                 f.write(str(imageArrayFromFile))
         else:
-            print("no file for:" + terrain_type)
+            # print("no file for:" + terrain_type)
             return None
     return imageArrayFromFile
 
 def DrawImageFromSquares(imageArray):
     height, width = len(imageArray), len(imageArray[0])
-    surface = pygame.Surface((width, height))
+    surface = pygame.Surface((width, height), pygame.SRCALPHA)
+    # make the background soft pink
+
     for y in range(height):
         for x in range(width):
             pygame.draw.rect(surface, imageArray[y][x], (x, y, 1, 1))
@@ -63,15 +63,15 @@ def MoveImage(image, x, y):
     screen.blit(image, (x, y))
     pygame.display.update()
 
-def ShuffleRectangles(surface):
-    rect_list = []
-    for y in range(surface.get_height()):
-        for x in range(surface.get_width()):
-            rect_list.append((x, y))
-    random.shuffle(rect_list)
-    new_surface = pygame.Surface(surface.get_size())  # Create new surface with correct dimensions
-    for rect in rect_list:
-        color = surface.get_at(rect)
-        new_color = surface.get_at(rect_list.pop())
-        new_surface.set_at(rect, new_color)
-    return new_surface
+# def ShuffleRectangles(surface):
+#     rect_list = []
+#     for y in range(surface.get_height()):
+#         for x in range(surface.get_width()):
+#             rect_list.append((x, y))
+#     random.shuffle(rect_list)
+#     new_surface = pygame.Surface(surface.get_size())  # Create new surface with correct dimensions
+#     for rect in rect_list:
+#         color = surface.get_at(rect)
+#         new_color = surface.get_at(rect_list.pop())
+#         new_surface.set_at(rect, new_color)
+#     return new_surface
