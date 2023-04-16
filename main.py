@@ -4,7 +4,6 @@ from hexagongraph import HexagonGraph
 from calculate import point_in_hexagon, update_game_screen_position, game_screen_offset_x, game_screen_offset_y, dx, dy
 from pathfinding import astar_hex
 from drawing import draw_grid
-# from draw_terrain import draw_terrain
 from utils import colors, screen, rows, cols, hex_size, layer1, layer2, layer1_rect, layer2_rect  
 pygame.font.init()
 font = pygame.font.SysFont("Arial", 16)
