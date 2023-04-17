@@ -1,5 +1,6 @@
 # hexagon_graph.py
 from terrain_types import terrain_types
+from utils import hex_size
 import numpy as np
 
 # Define the hexgraph class
@@ -10,7 +11,6 @@ class HexagonGraph:
         self.terrains = np.array(terrains)  # Convert to NumPy array
         self.colors = colors
 
-
     def get_hexagon(self, row, col):
         """Returns the hexagon at the given row and column"""
         return row, col
@@ -18,6 +18,19 @@ class HexagonGraph:
     def get_terrain(self, row, col):
         """Returns the terrain of the hexagon at the given row and column"""
         return self.terrains[row][col]
+    
+    def get_center(self, row, col):
+        """Returns the center of the hexagon"""
+        size = hex_size
+        h_dist = size * np.sqrt(3)
+        v_dist = size * 3/2
+        if row % 2 == 0:
+            center_x = col * h_dist + (size*3)/2
+            center_y = row * v_dist + size
+        else:
+            center_x = col * h_dist + size
+            center_y = row * v_dist + size
+        return center_x, center_y
 
     # Initialize the colors of the grid to the terrain colors of the grid 
     def init_colors(self):
