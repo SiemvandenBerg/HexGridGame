@@ -5,8 +5,8 @@ import pygame
 screen_width = 800
 screen_height = 600
 
-rows = 20
-cols = 15
+rows = 6
+cols = 4
 hex_size = 60
 
 dx = 0

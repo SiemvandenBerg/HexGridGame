@@ -25,7 +25,7 @@ def OpenImageFile(terrain_type):
     # check if the file exists in the cache
     if os.path.exists(cache_file):
         # read the file from the cache
-        print("cache exists for: " + str(terrain_type))
+        # print("cache exists for: " + str(terrain_type))
         with open(cache_file, 'r', encoding='utf-8') as f:
             data = f.read()
         imageArrayFromFile = ast.literal_eval(data)
@@ -51,7 +51,7 @@ def OpenImageFile(terrain_type):
 def DrawImageFromSquares(imageArray):
     height, width = len(imageArray), len(imageArray[0])
     surface = pygame.Surface((width, height), pygame.SRCALPHA)
-    print('Drawing the image...')
+    # print('Drawing the image...')
     for y in range(height):
         for x in range(width):
             pygame.draw.rect(surface, imageArray[y][x], (x, y, 1, 1))
