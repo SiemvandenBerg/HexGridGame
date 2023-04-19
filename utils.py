@@ -5,15 +5,17 @@ import pygame
 screen_width = 800
 screen_height = 600
 
-rows = 2
-cols = 2
+cols = 6
+rows = 4
 hex_size = 0.5 # was 60 for 2d grid 
+size = 0.5
+h_dist = size * np.sqrt(3)
+v_dist = size * 3/2
 
 dx = 0
 dy = 0
 
 initial_screen_pos = (50, 50)
-
 
 colors = np.full((rows, cols, 3), (255, 255, 255), dtype=int)
 

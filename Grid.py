@@ -1,16 +1,28 @@
-# hexagon_graph.py
+import pygame, numpy as np, random
+from pygame.locals import *
+from Hexagon import Hexagon
 from terrain_types import terrain_types
-from utils import hex_size
-import numpy as np
+from utils import h_dist, v_dist, cols, size
 
 # Define the hexgraph class
 class Grid:
-    def __init__(self, rows, columns, terrains, colors):
+    def __init__(self, rows, columns):
         self.rows = rows
         self.columns = columns
-        self.terrains = np.array(terrains)  # Convert to NumPy array
-        self.colors = colors
+        self.terrains = np.random.choice(['grassland', 'swamp', 'forest', 'dark forest', 'hills', 'mountains', 'water'], (rows, cols), p=[0.45, 0.02, 0.45, 0.02, 0.02, 0.02, 0.02])
+        self.colors = self.init_colors()
+        pygame.display.set_caption('Hexagonal Grid')
         self.hexagons = {}
+        self.terrain_graphics = {
+            'grassland': pygame.image.load('terrain_images/grassland.jpg'),
+            'swamp': pygame.image.load('terrain_images/swamp.jpg'),
+            'forest': pygame.image.load('terrain_images/forest.jpg'),
+            'dark forest': pygame.image.load('terrain_images/dark_forest.jpg'),
+            'hills': pygame.image.load('terrain_images/hills.jpg'),
+            'mountains': pygame.image.load('terrain_images/mountains.jpg'),
+            'water': pygame.image.load('terrain_images/water.jpg')
+        }
+        self.grid = self.init_grid()
 
     def get_hexagon(self, row, col):
         """Returns the hexagon at the given row and column"""
@@ -19,13 +31,60 @@ class Grid:
     def get_terrain(self, row, col):
         """Returns the terrain of the hexagon at the given row and column"""
         return self.terrains[row][col]
-
+    
     # Initialize the colors of the grid to the terrain colors of the grid 
     def init_colors(self):
+        colors = np.empty((self.rows, self.columns, 3), dtype=int)
         for row in range(self.rows):
             for col in range(self.columns):
-                terrain_type = terrain_types[self.terrains[row, col]]
-                self.colors[row, col] = terrain_type['color']
+                terrain = self.terrains[row, col]
+                colors[row, col] = terrain_types[terrain]['color']
+        return colors  
+        
+    # Initialize the grid with hexagons
+    def init_grid(self):
+        grid = np.empty((self.rows, self.columns), dtype=object)
+        for row in range(self.rows):
+            # print("row in init grid: " , row)
+            for col in range(self.columns):
+                # print("col in init grid: " , col)
+                if row % 2 == 0:
+                    center_x = col * h_dist + (size*3)/2
+                    center_y = row * v_dist + size*2.5
+                else:
+                    center_x = col * h_dist + (size*3)/2 + h_dist/2
+                    center_y = row * v_dist + size*2.5
+                # Offset the center of the entire grid to the center of the screen 
+                
+                print(self.columns * size, self.rows * size)
+                
+                center_x -= (self.columns * size)
+                center_y -= (self.rows * size)
+
+                
+                thickness = random.uniform(0.1, 0.5)
+                # round thickness to 1 decimal places
+                thickness = round(thickness, 1)
+
+                terrain = self.terrains[row, col]
+                # print("terrain in init: " , terrain)
+                graphic = self.terrain_graphics[terrain]  # Set graphic based on terrain type
+                self.hexagons[row, col] = Hexagon(x=center_x, y=center_y, row=row, col=col, radius=size, thickness=thickness, terrain=terrain, graphic=graphic)
+        return grid
+
+    # draw the grid on the screen with hexagons 
+    def draw_grid(self):
+        for row in range(self.rows):
+            for col in range(self.columns):
+                self.hexagons[row, col].draw()
+
+    # init the terrain images
+    def init_terrain_images(self):
+        terrain_images = {}
+        for terrain_type in terrain_types:
+            terrain_type = terrain_type.replace(' ', '_')
+            terrain_images[terrain_type] = pygame.image.load(terrain_types[terrain_type]['image'])
+        return terrain_images
 
     # Check if a hexagon is inside the grid
     def in_bounds(self, hexagon):
@@ -61,7 +120,6 @@ class Grid:
         return self.hex_cube_distance(start_cube, goal_cube)
     
     def hex_cost(self, current, neighbor):
-        
         row, col = current
         n_row, n_col = neighbor
         terrain_type = terrain_types[self.terrains[n_row, n_col]]
@@ -90,15 +148,12 @@ class Grid:
             self.colors[row][col] = (255, 0, 0)
 
     def hex_to_pixel(self, hexagon):
-        # print("Hex to pixel")
-        center_x = hex_size * np.sqrt(3) * (hexagon[1] + 0.5 * (hexagon[0] % 2))
-        center_y = hex_size * 3 / 2 * hexagon[0]
+        center_x = size * np.sqrt(3) * (hexagon[1] + 0.5 * (hexagon[0] % 2))
+        center_y = size * 3 / 2 * hexagon[0]
         return (center_x, center_y)
 
     def add_hexagon(self, hexagon):
-        # print("Adding hexagon at row: {}, col: {}".format(hexagon.row, hexagon.col))
         row, col = hexagon.row, hexagon.col
         if row not in self.hexagons:
             self.hexagons[row] = {}
-        # print(type(hexagon))
         self.hexagons[row][col] = hexagon
