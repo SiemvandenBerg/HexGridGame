@@ -3,7 +3,7 @@ import sys
 from PIL import Image
 import pygame
 import ast
-from utils import screen
+# from utils import screen
 import os
 import ast
 
@@ -57,10 +57,10 @@ def DrawImageFromSquares(imageArray):
             pygame.draw.rect(surface, imageArray[y][x], (x, y, 1, 1))
     return surface
 
-def MoveImage(image, x, y):
-    # screen.fill((0, 0, 0))
-    screen.blit(image, (x, y))
-    pygame.display.update()
+# def MoveImage(image, x, y):
+#     # screen.fill((0, 0, 0))
+#     screen.blit(image, (x, y))
+#     pygame.display.update()
 
 # def ShuffleRectangles(surface):
 #     rect_list = []

@@ -69,7 +69,7 @@ class Grid:
     
     def hex_to_cube(self, hexagon):
         row, col = hexagon
-        x = col,
+        x = col
         z = row
         y = -x - z
         return (x, y, z) 
@@ -95,31 +95,10 @@ class Grid:
         center_y = hex_size * 3 / 2 * hexagon[0]
         return (center_x, center_y)
 
-    def hex_to_3d(self, hexagon):
-        # print("Hex to 3D")
-        center_x, center_y = self.hex_to_pixel(hexagon)
-        center_z = 0
-        x = center_x
-        y = center_y
-        z = center_z
-        return np.dot(np.array([[np.sqrt(3), 0, 0], [np.sqrt(3)/2, 3/2, 0], [0, 0, -1/2]]), np.array([x, y, z]))
-
-    def convert_to_3d(self, center):
-        # print("Converting to 3D")
-        center_x, center_y = center
-        x = center_x
-        y = center_y
-        z = -x - y
-        return np.dot(np.array([[np.sqrt(3), 0, 0], [np.sqrt(3)/2, 3/2, 0], [0, 0, -1/2]]), np.array([x, y, z]))
-
     def add_hexagon(self, hexagon):
-        print("Adding hexagon at row: {}, col: {}".format(hexagon.row, hexagon.col))
+        # print("Adding hexagon at row: {}, col: {}".format(hexagon.row, hexagon.col))
         row, col = hexagon.row, hexagon.col
         if row not in self.hexagons:
             self.hexagons[row] = {}
-        # print("Hexagon row: {}".format(hexagon.row))
-        print(type(hexagon))
-
+        # print(type(hexagon))
         self.hexagons[row][col] = hexagon
-        # print(self.hexagons)
-        # hexagon.set_3d_coords(self)
