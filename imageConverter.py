@@ -12,7 +12,6 @@ for terrain in terrain_types:
 
     # if that terrain already has a .txt file, skip it
     if terrain + '.txt' in os.listdir('terrain_arrays'):
-        print(f'{terrain} already has a .txt file')
         continue
 
     terrain_image = terrain + '.jpg'

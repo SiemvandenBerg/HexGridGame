@@ -1,18 +1,24 @@
+# Grid.py
 import pygame, numpy as np, random
 from pygame.locals import *
-from Hexagon import Hexagon
+from math import sqrt
+import random, string
+from pygame.locals import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from pathfinding import astar_hex
 from terrain_types import terrain_types
-from utils import h_dist, v_dist, cols, size
+from Hexagon import Hexagon
+import math
 
-# Define the hexgraph class
 class Grid:
-    def __init__(self, rows, columns):
+    def __init__(self, rows, cols, world_size, h_dist_world, v_dist_world):
         self.rows = rows
-        self.columns = columns
+        self.cols = cols
+        self.world_size = world_size
+        self.h_dist_world = h_dist_world[0]
+        self.v_dist_world = v_dist_world[0]
         self.terrains = np.random.choice(['grassland', 'swamp', 'forest', 'dark forest', 'hills', 'mountains', 'water'], (rows, cols), p=[0.45, 0.02, 0.45, 0.02, 0.02, 0.02, 0.02])
-        self.colors = self.init_colors()
-        pygame.display.set_caption('Hexagonal Grid')
-        self.hexagons = {}
         self.terrain_graphics = {
             'grassland': pygame.image.load('terrain_images/grassland.jpg'),
             'swamp': pygame.image.load('terrain_images/swamp.jpg'),
@@ -23,137 +29,52 @@ class Grid:
             'water': pygame.image.load('terrain_images/water.jpg')
         }
         self.grid = self.init_grid()
-
-    def get_hexagon(self, row, col):
-        """Returns the hexagon at the given row and column"""
-        return row, col
+        self.name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+        self.clicked_pos = [0.0, 0.0, 0.0]
     
-    def get_terrain(self, row, col):
-        """Returns the terrain of the hexagon at the given row and column"""
-        return self.terrains[row][col]
-    
-    # Initialize the colors of the grid to the terrain colors of the grid 
-    def init_colors(self):
-        colors = np.empty((self.rows, self.columns, 3), dtype=int)
-        for row in range(self.rows):
-            for col in range(self.columns):
-                terrain = self.terrains[row, col]
-                colors[row, col] = terrain_types[terrain]['color']
-        return colors  
-        
-    # Initialize the grid with hexagons
     def init_grid(self):
-        grid = np.empty((self.rows, self.columns), dtype=object)
+        grid = np.empty((self.rows, self.cols), dtype=object)
+
         for row in range(self.rows):
-            # print("row in init grid: " , row)
-            for col in range(self.columns):
-                # print("col in init grid: " , col)
+            for col in range(self.cols):
+                x = col * self.h_dist_world*2
+                y = row * self.v_dist_world*2
+                # z = center_of_world[2]
+                # offset the center with half the distance between the hexagons
                 if row % 2 == 0:
-                    center_x = col * h_dist + (size*3)/2
-                    center_y = row * v_dist + size*2.5
-                else:
-                    center_x = col * h_dist + (size*3)/2 + h_dist/2
-                    center_y = row * v_dist + size*2.5
-                # Offset the center of the entire grid to the center of the screen 
+                    x += self.h_dist_world
+                    y += self.v_dist_world
+                elif row % 2 == 1:
+                    x += self.h_dist_world*2
+                    y += self.v_dist_world
+                z = 0.0
                 
-                print(self.columns * size, self.rows * size)
+                print("Init hex:", row, ",", col, " at pos:", x, y, z)
                 
-                center_x -= (self.columns * size)
-                center_y -= (self.rows * size)
-
-                
-                thickness = random.uniform(0.1, 0.5)
-                # round thickness to 1 decimal places
-                thickness = round(thickness, 1)
-
+                thickness = random.uniform(0.01, 0.05)
+                # thickness = 0.1
                 terrain = self.terrains[row, col]
-                # print("terrain in init: " , terrain)
-                graphic = self.terrain_graphics[terrain]  # Set graphic based on terrain type
-                self.hexagons[row, col] = Hexagon(x=center_x, y=center_y, row=row, col=col, radius=size, thickness=thickness, terrain=terrain, graphic=graphic)
+                graphic = self.terrain_graphics[terrain]
+                hexagon = Hexagon(row=row, col=col, radius=self.world_size, thickness=thickness, terrain=terrain, graphic=graphic, pos=(x, y, z)) # Create a hexagon at the world coordinates
+                grid[row, col] = hexagon
         return grid
+    
+    def select_hexagon(self, clicked_pos):
+        # print("Clicked on ", clicked_pos)
+        for row in range(self.rows):
+            for col in range(self.cols):
+                # print("Checking hexagon at ", row, col)
+                hexagon = self.grid[row, col]
+                # hexagon.clicked_pos_marker(clicked_pos)
+                if hexagon.contains_point(clicked_pos):
+                    selected_hexagon = hexagon
+                    print("!!! Clicked on hexagon at ", selected_hexagon.row, selected_hexagon.col)
+        return None
 
     # draw the grid on the screen with hexagons 
     def draw_grid(self):
         for row in range(self.rows):
-            for col in range(self.columns):
-                self.hexagons[row, col].draw()
-
-    # init the terrain images
-    def init_terrain_images(self):
-        terrain_images = {}
-        for terrain_type in terrain_types:
-            terrain_type = terrain_type.replace(' ', '_')
-            terrain_images[terrain_type] = pygame.image.load(terrain_types[terrain_type]['image'])
-        return terrain_images
-
-    # Check if a hexagon is inside the grid
-    def in_bounds(self, hexagon):
-        row, col = hexagon
-        return 0 <= row < self.rows and 0 <= col < self.columns
-
-    def neighbors_hex(self, hexagon):
-        row, col = hexagon
-        if row % 2 == 0:
-            result = [
-                (row - 1, col - 1),
-                (row - 1, col),
-                (row, col + 1),
-                (row + 1, col),
-                (row + 1, col - 1),
-                (row, col - 1),
-            ]
-        else:
-            result = [
-                (row - 1, col),
-                (row - 1, col + 1),
-                (row, col + 1),
-                (row + 1, col + 1),
-                (row + 1, col),
-                (row, col - 1),
-            ]
-        result = filter(self.in_bounds, result)
-        return result
-    
-    def heuristic_cost_estimate(self, start, goal):
-        start_cube = self.hex_to_cube(start)
-        goal_cube = self.hex_to_cube(goal)
-        return self.hex_cube_distance(start_cube, goal_cube)
-    
-    def hex_cost(self, current, neighbor):
-        row, col = current
-        n_row, n_col = neighbor
-        terrain_type = terrain_types[self.terrains[n_row, n_col]]
-        return terrain_type['movement_cost']
-    
-    def hex_to_cube(self, hexagon):
-        row, col = hexagon
-        x = col
-        z = row
-        y = -x - z
-        return (x, y, z) 
-    
-    # Calculate the distance between two hexagons using cube distance
-    def hex_cube_distance(self, a, b):
-        if len(a) != 3 or len(b) != 3:
-            raise ValueError("hex_distance() takes 2 hexagon cube coordinates as input")
-        x1, y1, z1 = a
-        x2, y2, z2 = b
-        distance = max(abs(x1-x2), abs(y1-y2), abs(z1-z2))
-        return (distance + 1) // 2
-    
-    # Draw a path on the grid by changing the color of the hexagons in the path
-    def draw_path(self, path):
-        for hexagon in path:
-            row, col = hexagon
-            self.colors[row][col] = (255, 0, 0)
-
-    def hex_to_pixel(self, hexagon):
-        center_x = size * np.sqrt(3) * (hexagon[1] + 0.5 * (hexagon[0] % 2))
-        center_y = size * 3 / 2 * hexagon[0]
-        return (center_x, center_y)
-
-    def add_hexagon(self, hexagon):
-        row, col = hexagon.row, hexagon.col
-        if row not in self.hexagons:
-            self.hexagons[row] = {}
-        self.hexagons[row][col] = hexagon
+            for col in range(self.cols):
+                # print("drawing hex at ", row, col, self.grid[row, col].pos)
+            
+                self.grid[row, col].draw()

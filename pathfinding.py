@@ -2,7 +2,6 @@
 import heapq
 
 def astar_hex(graph, start, end):
-    print("in astar_hex")
     # Create the heap and add the start node
     heap = []
     heapq.heappush(heap, (0, start))
@@ -23,8 +22,6 @@ def astar_hex(graph, start, end):
         # Pop the node with the lowest cost from the heap
         current_cost, current_node = heapq.heappop(heap)
 
-        print(f"Current node: {current_node}")
-        
         # If the current node is the end node, return the path
         if current_node == end:
             path = [current_node]
@@ -42,9 +39,6 @@ def astar_hex(graph, start, end):
             # Calculate the cost to move from the current node to the neighbor
             new_cost = costs[current_node] + graph.hex_cost(current_node, neighbor)
 
-            # Print the neighbor and cost
-            print(f"Neighbor: {neighbor}, cost: {new_cost}")
-            
             # Estimate the cost to move from the neighbor to the end node
             neighbor_cube = graph.hex_to_cube(neighbor)
             end_cube = graph.hex_to_cube(end)
@@ -68,5 +62,4 @@ def astar_hex(graph, start, end):
                 heapq.heappush(heap, (priority, neighbor))
     
     # If the end node is not reachable, return an empty list
-    print("No path found")
     return []

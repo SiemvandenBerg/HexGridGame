@@ -16,7 +16,6 @@ def OpenImageFile(terrain_type):
     # if os.path.exists(cache_dir):
     #     for file in os.listdir(cache_dir):
     #         os.remove(os.path.join(cache_dir, file))
-    #         print("cache cleared")
 
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir)
@@ -25,14 +24,11 @@ def OpenImageFile(terrain_type):
     # check if the file exists in the cache
     if os.path.exists(cache_file):
         # read the file from the cache
-        # print("cache exists for: " + str(terrain_type))
         with open(cache_file, 'r', encoding='utf-8') as f:
             data = f.read()
         imageArrayFromFile = ast.literal_eval(data)
     else:
         # create the file and store it in the cache
-        # print("cached data does NOT exist for:" + str(terrain_type))
-        # print("creating cached data for:" + str(terrain_type))
         # replace spaces with underscores in terrain
         terrain_type = terrain_type.replace(' ', '_')
 
@@ -44,14 +40,12 @@ def OpenImageFile(terrain_type):
             with open(cache_file, 'w', encoding='utf-8') as f:
                 f.write(str(imageArrayFromFile))
         else:
-            # print("no file for:" + terrain_type)
             return None
     return imageArrayFromFile
 
 def DrawImageFromSquares(imageArray):
     height, width = len(imageArray), len(imageArray[0])
     surface = pygame.Surface((width, height), pygame.SRCALPHA)
-    # print('Drawing the image...')
     for y in range(height):
         for x in range(width):
             pygame.draw.rect(surface, imageArray[y][x], (x, y, 1, 1))
