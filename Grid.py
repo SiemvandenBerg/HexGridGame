@@ -7,9 +7,8 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from pathfinding import astar_hex
-from terrain_types import terrain_types
 from Hexagon import Hexagon
-import math
+from terrain_types import terrain_types
 
 class Grid:
     def __init__(self, rows, cols, world_size, h_dist_world, v_dist_world):
@@ -39,8 +38,6 @@ class Grid:
             for col in range(self.cols):
                 x = col * self.h_dist_world*2
                 y = row * self.v_dist_world*2
-                # z = center_of_world[2]
-                # offset the center with half the distance between the hexagons
                 if row % 2 == 0:
                     x += self.h_dist_world
                     y += self.v_dist_world
@@ -49,10 +46,7 @@ class Grid:
                     y += self.v_dist_world
                 z = 0.0
                 
-                print("Init hex:", row, ",", col, " at pos:", x, y, z)
-                
                 thickness = random.uniform(0.01, 0.05)
-                # thickness = 0.1
                 terrain = self.terrains[row, col]
                 graphic = self.terrain_graphics[terrain]
                 hexagon = Hexagon(row=row, col=col, radius=self.world_size, thickness=thickness, terrain=terrain, graphic=graphic, pos=(x, y, z)) # Create a hexagon at the world coordinates
@@ -60,21 +54,74 @@ class Grid:
         return grid
     
     def select_hexagon(self, clicked_pos):
-        # print("Clicked on ", clicked_pos)
+        selected_hexagon = None
         for row in range(self.rows):
             for col in range(self.cols):
-                # print("Checking hexagon at ", row, col)
                 hexagon = self.grid[row, col]
-                # hexagon.clicked_pos_marker(clicked_pos)
                 if hexagon.contains_point(clicked_pos):
                     selected_hexagon = hexagon
-                    print("!!! Clicked on hexagon at ", selected_hexagon.row, selected_hexagon.col)
-        return None
+                    print("Clicked on hexagon at ", selected_hexagon.row, selected_hexagon.col)
+        return selected_hexagon
 
     # draw the grid on the screen with hexagons 
     def draw_grid(self):
         for row in range(self.rows):
             for col in range(self.cols):
-                # print("drawing hex at ", row, col, self.grid[row, col].pos)
-            
                 self.grid[row, col].draw()
+
+    def neighbors_hex(self, hexagon):
+            row, col = hexagon
+            if row % 2 == 0:
+                result = [
+                    (row - 1, col - 1),
+                    (row - 1, col),
+                    (row, col + 1),
+                    (row + 1, col),
+                    (row + 1, col - 1),
+                    (row, col - 1),
+                ]
+            else:
+                result = [
+                    (row - 1, col),
+                    (row - 1, col + 1),
+                    (row, col + 1),
+                    (row + 1, col + 1),
+                    (row + 1, col),
+                    (row, col - 1),
+                ]
+            result = filter(self.in_bounds, result) 
+            return result
+    
+    # Check if a hexagon is inside the grid
+    def in_bounds(self, hexagon):
+        row, col = hexagon
+        return 0 <= row < self.rows and 0 <= col < self.cols
+    
+    # Calculate the cost of moving from one hexagon to another
+    def hex_cost(self, current, neighbor):
+        row, col = current
+        n_row, n_col = neighbor
+        terrain_type = terrain_types[self.terrains[n_row, n_col]]
+        return terrain_type['movement_cost']
+    
+    # Generate cube coordinates from axial coordinates
+    def hex_to_cube(self, hexagon):
+        row, col = hexagon
+        x = col
+        z = row
+        y = -x - z
+        return (x, y, z) 
+    
+    
+    # Calculate the distance between two hexagons using cube distance
+    def hex_cube_distance(self, a, b):
+        # If the terrain is not passable, return a high cost
+        if len(a) != 3 or len(b) != 3:
+            # // Code to follow
+            raise ValueError("hex_distance() takes 2 hexagon cube coordinates as input")
+        x1, y1, z1 = a
+        x2, y2, z2 = b
+        # Calculate the cube distance between the two hexagons
+        distance = max(abs(x1-x2), abs(y1-y2), abs(z1-z2))
+        # Divide the cube distance by 2, rounded up to the nearest integer
+        return (distance + 1) // 2

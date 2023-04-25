@@ -65,7 +65,8 @@ last_clicked_pos = gluUnProject(0, 0, 0, modelview, projection, viewport)
 
 colors = np.full((rows, cols, 3), (255, 255, 255), dtype=int)
 
-# screen = pygame.display.set_mode((screen_width, screen_height))
+screen = pygame.display.set_mode(display, pygame.DOUBLEBUF|pygame.OPENGL)
+
 layer1 = pygame.Surface((screen_width, screen_height))
 layer1_rect = layer1.get_rect()
 layer2 = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)

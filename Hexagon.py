@@ -61,7 +61,7 @@ class Hexagon:
     def draw(self):
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
         glEnable(GL_LINE_SMOOTH)
-        glEnable(GL_DEPTH_TEST)
+        # glEnable(GL_DEPTH_TEST)
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
         glEnable(GL_COLOR_MATERIAL)
@@ -142,3 +142,11 @@ class Hexagon:
         glColor3f(1.0, 0.0, 0.0)
         glVertex3f(last_clicked_pos[0], last_clicked_pos[1], 0.0)
         glEnd()
+
+        glDisable(GL_LIGHTING)
+        glDisable(GL_LIGHT0)
+        glDisable(GL_COLOR_MATERIAL)
+        # glDisable(GL_DEPTH_TEST)
+        glDisable(GL_LINE_SMOOTH)
+        glDisable(GL_TEXTURE_2D)
+

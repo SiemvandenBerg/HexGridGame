@@ -2,16 +2,21 @@
 import pygame, numpy as np, random
 from pygame.locals import *
 from math import sqrt
-import random, string
+import random
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from Grid import Grid
-from Hexagon import Hexagon
 from utils import *
+from pathfinding import astar_hex
+
+ui_surface = pygame.Surface((display[0], display[1]), pygame.SRCALPHA)
+grid = Grid(rows, cols, world_size, world_h_dist, world_v_dist)
+start = None
+end = None
 
 def handle_events():
-    global running, last_clicked_pos
+    global running, last_clicked_pos, start, end
     modelview = glGetDoublev(GL_MODELVIEW_MATRIX)
     projection = glGetDoublev(GL_PROJECTION_MATRIX)
     viewport = glGetIntegerv(GL_VIEWPORT)
@@ -24,47 +29,23 @@ def handle_events():
                 mouse_pos = (mouse_pos[0], screen_height - mouse_pos[1])         
                 depth_value = glReadPixels(mouse_pos[0], mouse_pos[1], 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT)       
                 mouse_pos = gluUnProject(mouse_pos[0], mouse_pos[1], depth_value, modelview, projection, viewport)
-                # print("mouse pos", mouse_pos)
                 last_clicked_pos = mouse_pos
-                # print("last clicked pos", last_clicked_pos)
-                grid.select_hexagon(mouse_pos)
-        # if key arrow is pressed, move the camera in the direction of the arrow
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                glTranslatef(-0.1, 0.0, 0.0)
-            if event.key == pygame.K_RIGHT:
-                glTranslatef(0.1, 0.0, 0.0)
-            if event.key == pygame.K_UP:
-                glTranslatef(0.0, 0.1, 0.0)
-            if event.key == pygame.K_DOWN:
-                glTranslatef(0.0, -0.1, 0.0)
-            if event.key == pygame.K_w:
-                glTranslatef(0.0, 0.0, 0.1)
-            if event.key == pygame.K_s:
-                glTranslatef(0.0, 0.0, -0.1)
-            if event.key == pygame.K_a:
-                glRotatef(1, 0, 1, 0)
-            if event.key == pygame.K_d:
-                glRotatef(-1, 0, 1, 0)
-            if event.key == pygame.K_q:
-                glRotatef(1, 1, 0, 0)
-            if event.key == pygame.K_e:
-                glRotatef(-1, 1, 0, 0)
-            if event.key == pygame.K_r:
-                glRotatef(1, 0, 0, 1)
-            if event.key == pygame.K_f:
-                glRotatef(-1, 0, 0, 1)
-        # print the current val;ues in use by gluLookAt (eye, center, up)
-        # print("eye", gluUnProject(0, 0, 0, modelview, projection, viewport))
-        # print("center", gluUnProject(screen_width/2, screen_height/2, 0, modelview, projection, viewport))
-        # print("up", gluUnProject(0, 1, 0, modelview, projection, viewport))
+                selected_hex = grid.select_hexagon(mouse_pos)
+                print('selected_hex: {}'.format(selected_hex))
+                if selected_hex:
+                    if start is None:
+                        start = (selected_hex.row, selected_hex.col)
+                        print('start: {}'.format(start))
+                    elif end is None and (selected_hex.row, selected_hex.col) != start:
+                        end = (selected_hex.row, selected_hex.col)
+                        print('end: {}'.format(end))
+                        path = astar_hex(grid, start, end)
+                        print('path: {}'.format(path))
+                        start = None
+                        end = None
 
 def main():
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-    glEnable(GL_DEPTH_TEST)
-    glClearColor(0.8, 0.8, 0.8, 1.0)
-    # grid.draw_grid()
-    pygame.display.flip()
+    ui_surface = pygame.Surface((display[0], display[1]), pygame.SRCALPHA)
     clock = pygame.time.Clock()
 
     while True:
@@ -72,8 +53,12 @@ def main():
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
         glEnable(GL_DEPTH_TEST)
         grid.draw_grid()
+        glDisable(GL_DEPTH_TEST)
+
+        ui_surface.fill((0, 0, 0, 0))
+        pygame.draw.rect(ui_surface, (255, 0, 0), (0, 0, 50, 50))
+        screen.blit(ui_surface, (0, 0))
         pygame.display.flip()
         clock.tick(60)
 
-grid = Grid(rows, cols, world_size, world_h_dist, world_v_dist)
 main()
