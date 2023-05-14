@@ -43,48 +43,6 @@ namespace Wilderwood
             string randomTerrainType = terrainTypes[randomIndex];
             hexCellTerrain.SetTerrainType(randomTerrainType);
         }
-        // public void Initialize()
-        // {
-        //     // Assign a random terrain type to the HexCell
-        //     string[] terrainTypes = new string[] { "grassland", "swamp", "forest", "dark forest", "hills", "mountains", "water" };
-        //     int randomIndex = Random.Range(0, terrainTypes.Length);
-        //     string randomTerrainType = terrainTypes[randomIndex];
-        //     hexCellTerrain.SetTerrainType(randomTerrainType);
-
-        //     // Create a new material and assign it to the renderer
-        //     Material material = new Material(Shader.Find("Standard"));
-        //     material.mainTextureScale = new Vector2(0.5f, 0.5f);
-        //     material.mainTextureOffset = new Vector2(0.25f, 0.25f);
-
-        //     // Set the main texture of the material based on the terrain type
-        //     switch (randomTerrainType)
-        //     {
-        //         case "grassland":
-        //             material.mainTexture = Resources.Load<Texture>("Textures/grassland");
-        //             break;
-        //         case "swamp":
-        //             material.mainTexture = Resources.Load<Texture>("Textures/swamp");
-        //             break;
-        //         case "forest":
-        //             material.mainTexture = Resources.Load<Texture>("Textures/forest");
-        //             break;
-        //         case "dark forest":
-        //             material.mainTexture = Resources.Load<Texture>("Textures/dark_forest");
-        //             break;
-        //         case "hills":
-        //             material.mainTexture = Resources.Load<Texture>("Textures/hills");
-        //             break;
-        //         case "mountains":
-        //             material.mainTexture = Resources.Load<Texture>("Textures/mountains");
-        //             break;
-        //         case "water":
-        //             material.mainTexture = Resources.Load<Texture>("Textures/water");
-        //             break;
-        //     }
-
-        //     GetComponent<Renderer>().material = material;
-        // }
-
 
         public void BuildConstruction()
         {

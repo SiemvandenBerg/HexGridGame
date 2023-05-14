@@ -40,9 +40,9 @@ namespace Wilderwood
                 if (prefab.GetComponent<HexCell>() != null)
                 {
                     HexCell hexCell = prefab.GetComponent<HexCell>();
-                    Debug.Log("HexCell row: " + hexCell.row);
-                    Debug.Log("HexCell col: " + hexCell.col);
-                    Debug.Log("HexCell height: " + hexCell.height);
+                    // Debug.Log("HexCell row: " + hexCell.row);
+                    // Debug.Log("HexCell col: " + hexCell.col);
+                    // Debug.Log("HexCell height: " + hexCell.height);
                     // add  the coordinates in the coordinates variable
                     coordinates += "(" + hexCell.row + "," + hexCell.col + "), ";
                     // add a line break after every row of hexagons
@@ -50,7 +50,6 @@ namespace Wilderwood
                     {
                         coordinates += "\n";
                     }
-                    Debug.Log("Coordinates: " + coordinates);
 
 
                 }
@@ -115,7 +114,6 @@ namespace Wilderwood
             }
             if (closestHex != null)
             {
-                // Debug.Log("Closest hexagon: " + closestHex.row + ", " + closestHex.col);
                 return new Vector2Int(closestHex.col, closestHex.row);
 
             }
@@ -159,7 +157,6 @@ namespace Wilderwood
 
                         if (hex != null)
                         {
-                            // Debug.Log("Hexagon selected at: " + hex.y + ", " + hex.x);
                             if (start == new Vector2Int(9999, 9999) && end == new Vector2Int(9999, 9999))
                             {
                                 SetStartHex(hex);
@@ -175,9 +172,9 @@ namespace Wilderwood
                                     {
                                         pathString += pathHex + ", ";
                                     }
-                                    Debug.Log("Start: " + start);
-                                    Debug.Log("Path: " + pathString);
-                                    Debug.Log("End: " + end);
+                                    // Debug.Log("Start: " + start);
+                                    // Debug.Log("Path: " + pathString);
+                                    // Debug.Log("End: " + end);
                                 }
                                 else
                                 {

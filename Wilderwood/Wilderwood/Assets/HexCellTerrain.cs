@@ -18,30 +18,38 @@ namespace Wilderwood
 
         public void SetTerrainType(string terrainType)
         {
+            Material newMaterial = null;
             switch (terrainType)
             {
                 case "grassland":
-                    meshRenderer.material = grasslandMaterial;
+                    newMaterial = new Material(grasslandMaterial);
                     break;
                 case "swamp":
-                    meshRenderer.material = swampMaterial;
+                    newMaterial = new Material(swampMaterial);
                     break;
                 case "forest":
-                    meshRenderer.material = forestMaterial;
+                    newMaterial = new Material(forestMaterial);
                     break;
                 case "dark forest":
-                    meshRenderer.material = darkForestMaterial;
+                    newMaterial = new Material(darkForestMaterial);
                     break;
                 case "hills":
-                    meshRenderer.material = hillsMaterial;
+                    newMaterial = new Material(hillsMaterial);
                     break;
                 case "mountains":
-                    meshRenderer.material = mountainsMaterial;
+                    newMaterial = new Material(mountainsMaterial);
                     break;
                 case "water":
-                    meshRenderer.material = waterMaterial;
+                    newMaterial = new Material(waterMaterial);
                     break;
             }
+            if (newMaterial != null)
+            {
+                newMaterial.mainTextureScale = new Vector2(0.5f, 0.5f);
+                newMaterial.mainTextureOffset = new Vector2(0.25f, 0.25f);
+                meshRenderer.material = newMaterial;
+            }
         }
+
     }
 }

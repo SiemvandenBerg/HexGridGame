@@ -35,7 +35,6 @@ namespace Wilderwood
                 Vector2Int currentNode;
                 (currentCost, currentNode) = heap[0];
                 heap.RemoveAt(0);
-                // Debug.Log($"Current node: {currentNode}, Current cost: {currentCost}");
                 if (currentNode == end)
                 {
                     var path = new List<Vector2Int> { currentNode };
@@ -130,7 +129,6 @@ namespace Wilderwood
                 // add the coordinates in the neighbors variable
                 neighbors += "(" + neighbor.x + "," + neighbor.y + "), ";
             }
-            // Debug.Log("Neighbors: " + neighbors);
         }
         private static float HexChebyshevDistance(Vector2Int a, Vector2Int b)
         {
