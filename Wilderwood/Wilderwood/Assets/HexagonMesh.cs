@@ -7,14 +7,22 @@ namespace Wilderwood
         private Mesh mesh;
         private int topHexagonVerticesCount = 6;
         private float heightFactor;
-        float hexagonHeight = 0.5f;
+        float hexagonHeight = 0.2f;
+        public MeshRenderer sideMeshRenderer;
+        public Color sideColor = new Color(0.75f, 0.75f, 0.75f, 1f);
+        // public GameObject tree;
+
+
         private void Awake()
         {
             mesh = new Mesh();
             MeshCollider meshCollider = gameObject.AddComponent<MeshCollider>();
             GetComponent<MeshFilter>().mesh = mesh;
             float heightFactor = Random.Range(0.1f, 0.5f);
-            heightFactor = Mathf.Round(heightFactor * 100f) / 100f;
+            // heightFactor = Mathf.Round(heightFactor * 100f) / 100f;
+            // Get the gameobject quad called Tree that is attached to the same gameobject as this script
+            // tree = transform.Find("Tree").gameObject;
+
             hexagonHeight += heightFactor;
             Vector3[] vertices = new Vector3[]
             {
@@ -83,23 +91,23 @@ namespace Wilderwood
             }
             // Assign the UV coordinates to the mesh
             mesh.uv = uv;
+            // Set the texture scale and offset
             Material material = GetComponent<Renderer>().material;
             material.mainTextureScale = new Vector2(0.5f, 0.5f);
             material.mainTextureOffset = new Vector2(0.25f, 0.25f);
             material.mainTexture.wrapMode = TextureWrapMode.Clamp;
-
             HexCell hexCell = GetComponent<HexCell>();
             if (hexCell != null)
             {
                 hexCell.height = hexagonHeight;
             }
-
+            // move the tree to the position of the hexagon
+            // tree.transform.position = new Vector3(transform.position.x, hexagonHeight, transform.position.z);
             meshCollider.sharedMesh = mesh;
             // Create a new material
-            Material topMaterial = new Material(Shader.Find("Standard"));
+            Material sideMaterial = new Material(Shader.Find("Standard"));
             // set color to light grey
-            topMaterial.color = new Color(0.75f, 0.75f, 0.75f, 1f);
-
+            sideMaterial.color = sideColor;
             // Get the mesh renderer component
             MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
             // Get the current materials array
@@ -107,16 +115,17 @@ namespace Wilderwood
             // Resize the materials array to add the new material
             System.Array.Resize(ref materials, materials.Length + 1);
             // Assign the new material to the last element of the materials array
-            materials[materials.Length - 1] = topMaterial;
+            materials[materials.Length - 1] = sideMaterial;
             // Assign the new materials array back to the mesh renderer
             meshRenderer.materials = materials;
-
             // Create a new submesh for the top hexagon
             mesh.subMeshCount = 2;
             // int[] topTriangles = new int[] { 6, 11, 7, 7, 11, 10, 7, 10, 8, 8, 10, 9 };
             // mesh.SetTriangles(topTriangles, 1);
             int[] sideTriangles = new int[] { 5, 6, 0, 5, 11, 6, 5, 4, 11, 10, 11, 4, 4, 3, 10, 9, 10, 3, 3, 2, 9, 8, 9, 2, 2, 1, 8, 7, 8, 1, 7, 1, 0, 6, 7, 0 };
             mesh.SetTriangles(sideTriangles, 1);
+
         }
+
     }
 }

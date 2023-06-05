@@ -50,8 +50,6 @@ namespace Wilderwood
                     {
                         coordinates += "\n";
                     }
-
-
                 }
             }
 
@@ -94,8 +92,6 @@ namespace Wilderwood
                 prefabHeights[x, y] = height;
             }
         }
-
-
         Vector2Int SelectHexagon(Vector3 worldPos)
         {
             float minDistance = float.MaxValue;
@@ -134,7 +130,6 @@ namespace Wilderwood
             }
             return null;
         }
-
         void HandleEvents()
         {
             if (Input.GetMouseButtonDown(0))
